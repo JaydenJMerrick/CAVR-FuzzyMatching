@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        
+    </head>
+    <body style="background-color: darkslategray;">
+        <h1 style="color:blanchedalmond; text-align: center;">Drag file Here:</h1>
+        <br>
+        <div id="drag_and_drop" style="margin-left:auto; margin-right: auto; background-color: cornsilk; width: 500px; height: 500px;">
+            <h2 style="text-align: center; font-size: 30px;">Here!</h2>
+        </div>
+        <input type="file" id="file-input" style="display: none;">
+
+        <script>    
+
+            // Gets the Drag and Drop from html
+            const dropZone = document.getElementById('drag_and_drop');
+
+            // Makes event for the "dragging" of the file
+            dropZone.addEventListener("dragover", (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+            });
+
+            // Makes event for the "dropping" of the file
+            dropZone.addEventListener("drop", (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+
+                // Get the file and give it to the upload function
+                const files = e.dataTransfer.files;
+                if (files.length > 0) {
+                    uploadFile(files[0]);
+                }
+            });
+
+            function uploadFile(file) {
+
+                // This is merely for testing purposes
+                console.log("File Captured: ", file.name);
+
+                // Putting file into a form so
+                const formData = new FormData();
+                formData.append("csv_file", file);
+
+                // This should ensure that our python can be on netlify
+                // const uploadUrl = '/.netlify/functions/upload';
+
+                const uploadUrl = 'http://127.0.0.1:5000';
+
+                fetch(uploadUrl, {
+                    method: "POST",
+                    body: formData
+                })
+                .then(response => {
+                    // For status
+                    if(!response.ok) {
+                        throw new Error("HTTP error! Status: ${response.status}");
+                    }
+
+                    // The returned data to display 
+                    return response.json();
+                })
+                .then(data => {
+                    console.log("File Captured: ", file.name);
+
+                    //Graphs:: 
+
+                })
+                .catch(error => {
+                    console.error("Error with fetch: ", error);
+                });
+            }
+
+
+        </script>
+    </body>
+</html>
